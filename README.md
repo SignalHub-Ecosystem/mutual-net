@@ -18,7 +18,7 @@ Communication and discovery is done using WebRTC, the hash of the shared secret
 
 ```js
 
-var net = require('@m-onz/cohort-net')
+var net = require('mutual-net')
 
 // authorize the client to connect
 
