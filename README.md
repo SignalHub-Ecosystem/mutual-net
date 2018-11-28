@@ -37,3 +37,9 @@ net.createServer(function (socket) {
 })
 
 ```
+
+## `install`
+
+```sh
+npm i mutual-net --save
+```
