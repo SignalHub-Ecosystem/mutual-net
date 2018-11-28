@@ -19,13 +19,16 @@ function hash (thing) {
 function Mutual (options) {
   if (!(this instanceof Mutual)) return new Mutual(options)
   EventEmitter.call(this)
-  this.setMaxListeners(0)
-  this.options = Object.assign({}, options)
+  this.options = Object.assign({
+    signalhubs: [ 'https://telescope.computer' ],
+  }, options)
   this.id = crypto.createECDH('secp256k1')
-  this.id.generateKeys()
+  if (this.options.hasOwnProperty('privateKey')) {
+    this.id.setPrivateKey(Buffer.from(this.options.privateKey, 'hex'))
+  } else { this.id.generateKeys(); }
   this.publicKey = this.id.getPublicKey().toString('hex')
-  console.log(this.publicKey)
-  this.signalhubs = [ 'https://telescope.computer' ]
+  console.log('public key <', this.publicKey, '>')
+  this.signalhubs = this.options.signalhubs
   this.authorized = []
 }
 
@@ -33,7 +36,7 @@ inherits(Mutual, EventEmitter)
 
 Mutual.prototype.connect = function (pk, cb) {
   var secret = this.id.computeSecret(Buffer.from(pk, 'hex'), null, 'hex')
-  console.log('<connect> ', secret)
+  // nice spinner goes here?
   var hub = signalhub(hash(secret), this.signalhubs)
   if (typeof window !== 'object') {
     var sw = swarm(hub, { wrtc: wrtc })
@@ -41,15 +44,19 @@ Mutual.prototype.connect = function (pk, cb) {
     var sw = swarm(hub)
   }
   sw.once('peer', function (peer, id) {
-    console.log('peer!')
     socket = dcs(peer, secret)
     cb(null, socket)
   })
+  sw.on('error', console.log)
   sw.on('disconnect', function () {})
 }
 
 Mutual.prototype.getPublicKey = function () {
-  return this.publicKey
+  return this.id.getPublicKey().toString('hex')
+}
+
+Mutual.prototype.getPrivateKey = function () {
+  return this.id.getPrivateKey().toString('hex')
 }
 
 Mutual.prototype.authorize = function (public_key) {
@@ -65,7 +72,6 @@ Mutual.prototype.channels = function () {
   var self = this
   this.authorized.forEach(function (client) {
     if (!client.live) {
-      console.log(client)
       var hub = signalhub(hash(client.secret), self.signalhubs)
       if (typeof window !== 'object') {
         var sw = swarm(hub, { wrtc: wrtc })
@@ -73,10 +79,10 @@ Mutual.prototype.channels = function () {
         var sw = swarm(hub)
       }
       sw.on('peer', function (peer, id) {
-        console.log('peer!')
         var socket = dcs(peer, client.secret)
         self.emit('connection', socket, client.publicKey)
       })
+      sw.on('error', console.log)
       sw.on('disconnect', function () {
         self.emit('peers', sw.peers.length)
       })

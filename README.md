@@ -18,23 +18,22 @@ Communication and discovery is done using WebRTC, the hash of the shared secret
 
 ```js
 
-var net = require('mutual-net')
+var mutual_net = require('mutual-net')
 
-var test = net()
-var client = net()
+var net = mutual_net()
+var client = mutual_net()
 
-test.authorize(client.getPublicKey())
+net.authorize(client.getPublicKey())
 
-test.createServer(function (socket) {
+net.createServer(function (socket) {
   socket.pipe(socket)
 }, function () {
-  client.connect(test.getPublicKey(), function (err, socket) {
+  client.connect(net.getPublicKey(), function (err, socket) {
     socket.on('data', function (d) {
       console.log(d.toString())
     })
     socket.write('hello!')
   })
 })
-
 
 ```
