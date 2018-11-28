@@ -1,0 +1,16 @@
+{
+  "name": "@m-onz/cohort-mutual-net",
+  "version": "1.0.0",
+  "description": "mutually authenticating client and server for node and the browser",
+  "main": "index.js",
+  "dependencies": {
+    "crypto-stream": "^1.0.0",
+    "pumpify": "^1.5.1"
+  },
+  "scripts": {
+    "test": "node test.js",
+    "start": "node server.js"
+  },
+  "author": "m-onz",
+  "license": "ISC"
+}
