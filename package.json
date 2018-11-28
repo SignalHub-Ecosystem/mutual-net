@@ -1,5 +1,5 @@
 {
-  "name": "@m-onz/cohort-mutual-net",
+  "name": "mutual-net",
   "version": "1.0.0",
   "description": "mutually authenticating client and server for node and the browser",
   "main": "index.js",
@@ -12,5 +12,5 @@
     "start": "node server.js"
   },
   "author": "m-onz",
-  "license": "ISC"
+  "license": "MIT"
 }

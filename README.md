@@ -1,5 +1,5 @@
 
-# `cohort-mutual-net`
+# `mutual-net`
 
 Mutually authenticating and encrypted client and servers (similar to nodes net api) using webRTC and wrtc for networking.
 
