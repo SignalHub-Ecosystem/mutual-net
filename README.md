@@ -20,16 +20,21 @@ Communication and discovery is done using WebRTC, the hash of the shared secret
 
 var net = require('mutual-net')
 
-// authorize the client to connect
+var test = net()
+var client = net()
 
-var server = net.createServer(function (socket) {
+test.authorize(client.getPublicKey())
+
+test.createServer(function (socket) {
   socket.pipe(socket)
 }, function () {
-  var client = net()
-  socket = client.connect(server.getPublicKey())
-  server.authorize(client.getPublicKey())
-  socket.on('data', console.log)
-  socket.write('hello!')
+  client.connect(test.getPublicKey(), function (err, socket) {
+    socket.on('data', function (d) {
+      console.log(d.toString())
+    })
+    socket.write('hello!')
+  })
 })
+
 
 ```
